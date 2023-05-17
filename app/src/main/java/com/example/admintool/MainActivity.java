@@ -1,5 +1,6 @@
 package com.example.admintool;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
@@ -19,6 +20,12 @@ import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ListView;
 import android.widget.Spinner;
+import android.widget.Toast;
+
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -27,6 +34,8 @@ public class MainActivity extends AppCompatActivity {
 
     ArrayList<WiFiData> WiFiList = new ArrayList<>();
     DataAdapter myAdapter;
+
+    DatabaseReference m_Database; // 파이어베이스 리얼 타임 디비
 
     WifiManager wifiManager;
     private String mSpinner1Value = "";
@@ -150,6 +159,33 @@ public class MainActivity extends AppCompatActivity {
                     Log.e("wifi","scanFailure ..............");
                 }
 
+            }
+        });
+
+        // 읽어온 와이파이 정보를 데이터베이스에 올리기
+        Button button2 = findViewById(R.id.btn2);
+        m_Database = FirebaseDatabase.getInstance().getReference();
+        button2.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                for(int i = 0; i < myAdapter.getCount(); i++) // 리스트뷰에 있는 만큼
+                {   // 데이터 디비에 등록하기
+                    m_Database.child(mSpinner1Value + "층").child(mSpinner2Value).child(myAdapter.getItem(i).getBSSID()).setValue(myAdapter.getItem(i).getRssi())
+                            .addOnSuccessListener(new OnSuccessListener<Void>() {
+                    @Override
+                    public void onSuccess(Void aVoid) {
+                        // 저장 성공 시 처리
+                        Toast.makeText(getApplicationContext(), "성공", Toast.LENGTH_SHORT).show();
+                    }
+                })
+                        .addOnFailureListener(new OnFailureListener() {
+                            @Override
+                            public void onFailure(@NonNull Exception e) {
+                                // 저장 실패 시 처리
+                                Toast.makeText(getApplicationContext(), "실패", Toast.LENGTH_SHORT).show();
+                            }
+                        });;
+                }
             }
         });
     }
