@@ -7,16 +7,17 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 
 public class WiFiData {
-    private String ssid, bssid;
-    private long timeStamp;
+    private String ssid, bssid, distance;
+    private double frequency;
     private int rssi;
 
-    public WiFiData(String ssid, String bssid, long timeStamp, int rssi)
+    public WiFiData(String ssid, String bssid, int rssi, double frequency, String distance)
     {
         this.ssid = ssid;
         this.bssid = bssid;
-        this.timeStamp = timeStamp;
         this.rssi = rssi;
+        this.frequency = frequency;
+        this.distance = distance;
     }
 
     public String getSSID()
@@ -29,18 +30,13 @@ public class WiFiData {
         return this.bssid;
     }
 
-    public String getTimeStamp()
-    {
-        Date d = new Date(timeStamp);
-        @SuppressLint("SimpleDateFormat")
-        DateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-        String time = format.format(d);
-        return time;
-    }
-
     public int getRssi()
     {
         return this.rssi;
     }
+
+    public double getFrequency(){return this.frequency;}
+
+    public String getDistance(){return this.distance;}
 
 }

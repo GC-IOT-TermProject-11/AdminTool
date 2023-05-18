@@ -34,6 +34,8 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
@@ -41,6 +43,8 @@ public class MainActivity extends AppCompatActivity {
     public String current_value =""; // 현재 스피너 값
     public int count;
     ArrayList<WiFiData> WiFiList = new ArrayList<>();
+
+    public List<ScanResult> beforeResult = new ArrayList<>();
     DataAdapter myAdapter;
 
     DatabaseReference m_Database; // 파이어베이스 리얼 타임 디비
@@ -244,22 +248,36 @@ public class MainActivity extends AppCompatActivity {
             // for ActivityCompat#requestPermissions for more details.
             return;
         }
-        count++;
+        count++; // 스캔 카운트 추가
         WiFiList.clear(); // 모델 초기화
-        List<ScanResult> results = wifiManager.getScanResults(); // 스캔 완료한 결과 가져오기
+        beforeResult = wifiManager.getScanResults();  // 스캔 완료한 결과 가져오기
+        Collections.sort(beforeResult, new Comparator<ScanResult>() { // rssi값 별로 정렬
+            @Override
+            public int compare(ScanResult scanResult, ScanResult scanResult2) {
+                if (scanResult.level > scanResult2.level) {
+                    return -1;
+                } else if (scanResult.level < scanResult2.level) {
+                    return 1;
+                }
+                return 0;
+            }
+        });
+
+        List<ScanResult> results = beforeResult; // 정렬된 값 받아오기
         for( ScanResult result: results) {
             String ssid = result.SSID; // SSID값 가져오기
-            if(ssid.equalsIgnoreCase("gc_free_wifi") || ssid.equalsIgnoreCase("eduroam")) {
+            if(ssid.equalsIgnoreCase("gc_free_wifi") || ssid.equalsIgnoreCase("eduroam")) //GC_Free_Wifi와 eduroam 와이파이만 가져오기
+            {
                 int rssi = result.level; // RSSI값 가져오기
                 double frequency = Double.valueOf(result.frequency);
-                long timestamp = result.timestamp; // 타임스탬프 값 가져오기
                 String bssid = result.BSSID; // BSSID값 가져오기
                 double exp = (27.55 - 20 * log10(frequency) + abs(rssi)) / 20.0;
                 double distance   = pow(10, exp);
-                String temp =ssid+ " " + bssid + " distance : " + distance; // 시리얼 출력용
-                System.out.println(temp);
 
-                WiFiList.add(new WiFiData(ssid, bssid, timestamp, rssi)); // 와이파이 리스트에 추가
+                String finalDistance = String.format("%.4f", distance);
+
+
+                WiFiList.add(new WiFiData(ssid, bssid, rssi, frequency, finalDistance)); // 와이파이 리스트에 추가
             }
 //            System.out.println(temp); // 스캔한 결과 출력
         }
