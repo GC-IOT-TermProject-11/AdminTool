@@ -1,5 +1,7 @@
 package com.example.admintool;
 
+import static java.lang.Math.log10;
+
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
@@ -21,6 +23,9 @@ import android.widget.Button;
 import android.widget.ListView;
 import android.widget.Spinner;
 import android.widget.Toast;
+import static java.lang.Math.abs;
+import static java.lang.Math.log10;
+import static java.lang.Math.pow;
 
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -42,7 +47,7 @@ public class MainActivity extends AppCompatActivity {
     private String mSpinner2Value = "";
 
     String[] floor = {"4", "5"};
-    String[] class_ = {"01호", "02호", "03호", "04호", "05호", "06호", "07호", "08호", "09호"};
+    String[] class_ = {"02호", "05호", "08호", "10호", "12호", "14호", "18호", "23호", "28호", "32호"};
     @Override
     protected void onCreate(Bundle savedInstanceState) {
 
@@ -207,10 +212,13 @@ public class MainActivity extends AppCompatActivity {
             String ssid = result.SSID; // SSID값 가져오기
             if(ssid.equalsIgnoreCase("gc_free_wifi") || ssid.equalsIgnoreCase("eduroam")) {
                 int rssi = result.level; // RSSI값 가져오기
+                double frequency = Double.valueOf(result.frequency);
                 long timestamp = result.timestamp; // 타임스탬프 값 가져오기
                 String bssid = result.BSSID; // BSSID값 가져오기
-                String temp = ssid + " " + rssi + " " + timestamp + " " + bssid; // 시리얼 출력용
-
+                double exp = (27.55 - 20 * log10(frequency) + abs(rssi)) / 20.0;
+                double distance   = pow(10, exp);
+                String temp =ssid+ " " + bssid + " distance : " + distance; // 시리얼 출력용
+                System.out.println(temp);
 
                 WiFiList.add(new WiFiData(ssid, bssid, timestamp, rssi)); // 와이파이 리스트에 추가
             }
