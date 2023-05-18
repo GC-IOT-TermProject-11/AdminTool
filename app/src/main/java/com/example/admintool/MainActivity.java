@@ -15,6 +15,7 @@ import android.content.pm.PackageManager;
 import android.net.wifi.ScanResult;
 import android.net.wifi.WifiManager;
 import android.os.Bundle;
+import android.os.Handler;
 import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
@@ -37,6 +38,8 @@ import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
 
+    public String current_value =""; // 현재 스피너 값
+    public int count;
     ArrayList<WiFiData> WiFiList = new ArrayList<>();
     DataAdapter myAdapter;
 
@@ -153,12 +156,28 @@ public class MainActivity extends AppCompatActivity {
 
             @Override
             public void onClick(View view) {
-
+                if(!current_value.equalsIgnoreCase(mSpinner2Value)) // 만약 호실이 변경되었을 경우
+                {
+                    count=0;
+                }
                 String spinner1Value = mSpinner1Value;
                 String spinner2Value = mSpinner2Value;
 
+                current_value=mSpinner2Value; // 현재 호수를 저장함.
+
                 boolean success = wifiManager.startScan();
                 if (!success) {
+                    // 스캔 실패시 toast message
+                    Toast message = Toast.makeText(getApplicationContext(), "스캔 실패", Toast.LENGTH_SHORT);
+                    message.show();
+
+                    Handler handler = new Handler();
+                    handler.postDelayed(new Runnable() {
+                        @Override
+                        public void run() {
+                            message.cancel();
+                        }
+                    }, 500);
                     // scan failure handling
                     scanFailure();
                     Log.e("wifi","scanFailure ..............");
@@ -180,14 +199,33 @@ public class MainActivity extends AppCompatActivity {
                     @Override
                     public void onSuccess(Void aVoid) {
                         // 저장 성공 시 처리
-                        Toast.makeText(getApplicationContext(), "성공", Toast.LENGTH_SHORT).show();
+                        Toast message = Toast.makeText(getApplicationContext(), "성공", Toast.LENGTH_SHORT);
+                        message.show();
+
+                        Handler handler = new Handler();
+                        handler.postDelayed(new Runnable() {
+                            @Override
+                            public void run() {
+                                message.cancel();
+                            }
+                        }, 500);
+
                     }
                 })
                         .addOnFailureListener(new OnFailureListener() {
                             @Override
                             public void onFailure(@NonNull Exception e) {
                                 // 저장 실패 시 처리
-                                Toast.makeText(getApplicationContext(), "실패", Toast.LENGTH_SHORT).show();
+                                Toast message = Toast.makeText(getApplicationContext(), "실패", Toast.LENGTH_SHORT);
+                                message.show();
+
+                                Handler handler = new Handler();
+                                handler.postDelayed(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        message.cancel();
+                                    }
+                                }, 500);
                             }
                         });;
                 }
@@ -206,6 +244,7 @@ public class MainActivity extends AppCompatActivity {
             // for ActivityCompat#requestPermissions for more details.
             return;
         }
+        count++;
         WiFiList.clear(); // 모델 초기화
         List<ScanResult> results = wifiManager.getScanResults(); // 스캔 완료한 결과 가져오기
         for( ScanResult result: results) {
@@ -225,6 +264,18 @@ public class MainActivity extends AppCompatActivity {
 //            System.out.println(temp); // 스캔한 결과 출력
         }
         myAdapter.notifyDataSetChanged(); // 리스트 추가한거 반영
+
+        //성공시 메세지 보내기 1초 toast
+        Toast message = Toast.makeText(getApplicationContext(), String.valueOf(count) + "번 스캔", Toast.LENGTH_SHORT); // 현재 몇번 스캔에 성공했는지 알려주는거
+        message.show();
+
+        Handler handler = new Handler();
+        handler.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                message.cancel();
+            }
+        }, 500);
 
     }
 
