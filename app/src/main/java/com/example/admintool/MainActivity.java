@@ -205,12 +205,16 @@ public class MainActivity extends AppCompatActivity {
         List<ScanResult> results = wifiManager.getScanResults(); // 스캔 완료한 결과 가져오기
         for( ScanResult result: results) {
             String ssid = result.SSID; // SSID값 가져오기
-            int rssi = result.level; // RSSI값 가져오기
-            long timestamp = result.timestamp; // 타임스탬프 값 가져오기
-            String bssid = result.BSSID; // BSSID값 가져오기
-            String temp = ssid + " " + rssi + " " + timestamp + " " + bssid; // 시리얼 출력용
-            WiFiList.add(new WiFiData(ssid,bssid,timestamp,rssi)); // 와이파이 리스트에 추가
-            System.out.println(temp); // 스캔한 결과 출력
+            if(ssid.equalsIgnoreCase("gc_free_wifi") || ssid.equalsIgnoreCase("eduroam")) {
+                int rssi = result.level; // RSSI값 가져오기
+                long timestamp = result.timestamp; // 타임스탬프 값 가져오기
+                String bssid = result.BSSID; // BSSID값 가져오기
+                String temp = ssid + " " + rssi + " " + timestamp + " " + bssid; // 시리얼 출력용
+
+
+                WiFiList.add(new WiFiData(ssid, bssid, timestamp, rssi)); // 와이파이 리스트에 추가
+            }
+//            System.out.println(temp); // 스캔한 결과 출력
         }
         myAdapter.notifyDataSetChanged(); // 리스트 추가한거 반영
 
