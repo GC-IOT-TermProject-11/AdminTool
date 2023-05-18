@@ -170,7 +170,7 @@ public class MainActivity extends AppCompatActivity {
             public void onClick(View v) {
                 for(int i = 0; i < myAdapter.getCount(); i++) // 리스트뷰에 있는 만큼
                 {   // 데이터 디비에 등록하기
-                    m_Database.child(mSpinner1Value + "층").child(mSpinner2Value).child(myAdapter.getItem(i).getBSSID()).setValue(myAdapter.getItem(i).getRssi())
+                    m_Database.child(mSpinner1Value + "층").child(mSpinner2Value).child(myAdapter.getItem(i).getBSSID()).push().setValue(myAdapter.getItem(i).getRssi())
                             .addOnSuccessListener(new OnSuccessListener<Void>() {
                     @Override
                     public void onSuccess(Void aVoid) {
