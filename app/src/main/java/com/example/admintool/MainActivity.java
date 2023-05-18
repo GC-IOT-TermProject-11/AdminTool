@@ -95,6 +95,52 @@ public class MainActivity extends AppCompatActivity {
         listView.setAdapter(myAdapter);
         //ListView 끝
 
+        listView.setOnItemClickListener(new AdapterView.OnItemClickListener(){
+            @Override
+            public void onItemClick(AdapterView parent, View v, int position, long id) {
+
+
+                m_Database.child(mSpinner1Value + "층").child(mSpinner2Value).child(myAdapter.getItem(position).getBSSID()).push().setValue(myAdapter.getItem(position).getRssi())
+                        .addOnSuccessListener(new OnSuccessListener<Void>() {
+                            @Override
+                            public void onSuccess(Void aVoid) {
+                                // 저장 성공 시 처리
+                                Toast message = Toast.makeText(getApplicationContext(), "성공", Toast.LENGTH_SHORT);
+                                message.show();
+
+                                Handler handler = new Handler();
+                                handler.postDelayed(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        message.cancel();
+                                    }
+                                }, 500);
+
+                            }
+                        })
+                        .addOnFailureListener(new OnFailureListener() {
+                            @Override
+                            public void onFailure(@NonNull Exception e) {
+                                // 저장 실패 시 처리
+                                Toast message = Toast.makeText(getApplicationContext(), "실패", Toast.LENGTH_SHORT);
+                                message.show();
+
+                                Handler handler = new Handler();
+                                handler.postDelayed(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        message.cancel();
+                                    }
+                                }, 500);
+                            }
+                        });;
+
+
+
+            }
+        });
+
+
         // wifi 가져오는 부분
         wifiManager = (WifiManager)getSystemService(Context.WIFI_SERVICE);
 
@@ -190,51 +236,51 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        // 읽어온 와이파이 정보를 데이터베이스에 올리기
-        Button button2 = findViewById(R.id.btn2);
-        m_Database = FirebaseDatabase.getInstance().getReference();
-        button2.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                for(int i = 0; i < myAdapter.getCount(); i++) // 리스트뷰에 있는 만큼
-                {   // 데이터 디비에 등록하기
-                    m_Database.child(mSpinner1Value + "층").child(mSpinner2Value).child(myAdapter.getItem(i).getBSSID()).push().setValue(myAdapter.getItem(i).getRssi())
-                            .addOnSuccessListener(new OnSuccessListener<Void>() {
-                    @Override
-                    public void onSuccess(Void aVoid) {
-                        // 저장 성공 시 처리
-                        Toast message = Toast.makeText(getApplicationContext(), "성공", Toast.LENGTH_SHORT);
-                        message.show();
-
-                        Handler handler = new Handler();
-                        handler.postDelayed(new Runnable() {
-                            @Override
-                            public void run() {
-                                message.cancel();
-                            }
-                        }, 500);
-
-                    }
-                })
-                        .addOnFailureListener(new OnFailureListener() {
-                            @Override
-                            public void onFailure(@NonNull Exception e) {
-                                // 저장 실패 시 처리
-                                Toast message = Toast.makeText(getApplicationContext(), "실패", Toast.LENGTH_SHORT);
-                                message.show();
-
-                                Handler handler = new Handler();
-                                handler.postDelayed(new Runnable() {
-                                    @Override
-                                    public void run() {
-                                        message.cancel();
-                                    }
-                                }, 500);
-                            }
-                        });;
-                }
-            }
-        });
+//        // 읽어온 와이파이 정보를 데이터베이스에 올리기
+//        Button button2 = findViewById(R.id.btn2);
+//        m_Database = FirebaseDatabase.getInstance().getReference();
+//        button2.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//                for(int i = 0; i < myAdapter.getCount(); i++) // 리스트뷰에 있는 만큼
+//                {   // 데이터 디비에 등록하기
+//                    m_Database.child(mSpinner1Value + "층").child(mSpinner2Value).child(myAdapter.getItem(i).getBSSID()).push().setValue(myAdapter.getItem(i).getRssi())
+//                            .addOnSuccessListener(new OnSuccessListener<Void>() {
+//                    @Override
+//                    public void onSuccess(Void aVoid) {
+//                        // 저장 성공 시 처리
+//                        Toast message = Toast.makeText(getApplicationContext(), "성공", Toast.LENGTH_SHORT);
+//                        message.show();
+//
+//                        Handler handler = new Handler();
+//                        handler.postDelayed(new Runnable() {
+//                            @Override
+//                            public void run() {
+//                                message.cancel();
+//                            }
+//                        }, 500);
+//
+//                    }
+//                })
+//                        .addOnFailureListener(new OnFailureListener() {
+//                            @Override
+//                            public void onFailure(@NonNull Exception e) {
+//                                // 저장 실패 시 처리
+//                                Toast message = Toast.makeText(getApplicationContext(), "실패", Toast.LENGTH_SHORT);
+//                                message.show();
+//
+//                                Handler handler = new Handler();
+//                                handler.postDelayed(new Runnable() {
+//                                    @Override
+//                                    public void run() {
+//                                        message.cancel();
+//                                    }
+//                                }, 500);
+//                            }
+//                        });;
+//                }
+//            }
+//        });
     }
 
     private void scanSuccess() {
@@ -266,7 +312,7 @@ public class MainActivity extends AppCompatActivity {
         List<ScanResult> results = beforeResult; // 정렬된 값 받아오기
         for( ScanResult result: results) {
             String ssid = result.SSID; // SSID값 가져오기
-            if(ssid.equalsIgnoreCase("gc_free_wifi") || ssid.equalsIgnoreCase("eduroam")) //GC_Free_Wifi와 eduroam 와이파이만 가져오기
+            if(ssid.equalsIgnoreCase("gc_free_wifi")) //GC_Free_Wifi와 eduroam 와이파이만 가져오기
             {
                 int rssi = result.level; // RSSI값 가져오기
                 double frequency = Double.valueOf(result.frequency);
