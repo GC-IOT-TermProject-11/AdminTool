@@ -94,7 +94,7 @@ public class MainActivity extends AppCompatActivity {
         myAdapter = new DataAdapter(this,WiFiList);
         listView.setAdapter(myAdapter);
         //ListView 끝
-
+        m_Database = FirebaseDatabase.getInstance().getReference();
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener(){
             @Override
             public void onItemClick(AdapterView parent, View v, int position, long id) {
@@ -238,7 +238,7 @@ public class MainActivity extends AppCompatActivity {
 
 //        // 읽어온 와이파이 정보를 데이터베이스에 올리기
 //        Button button2 = findViewById(R.id.btn2);
-//        m_Database = FirebaseDatabase.getInstance().getReference();
+//
 //        button2.setOnClickListener(new View.OnClickListener() {
 //            @Override
 //            public void onClick(View v) {
