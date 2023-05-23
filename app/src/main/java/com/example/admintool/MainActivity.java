@@ -54,7 +54,11 @@ public class MainActivity extends AppCompatActivity {
     private String mSpinner2Value = "";
 
     String[] floor = {"4", "5"};
-    String[] class_ = {"02호", "05호", "08호", "10호", "12호", "14호", "18호", "23호", "28호", "32호"};
+    String[] class_ = {"01호", "02호", "03호", "04호", "05호", "06호", "07호", "08호", "09호", "10호",
+            "11호", "12호", "13호", "14호", "15호", "16호", "17호", "18호", "19호", "20호",
+            "21호", "22호", "23호", "24호", "25호", "26호", "27호", "28호", "29호", "30호",
+            "31호", "32호", "33호", "34호", "35호"
+    };
     @Override
     protected void onCreate(Bundle savedInstanceState) {
 
@@ -94,7 +98,7 @@ public class MainActivity extends AppCompatActivity {
         myAdapter = new DataAdapter(this,WiFiList);
         listView.setAdapter(myAdapter);
         //ListView 끝
-        m_Database = FirebaseDatabase.getInstance().getReference();
+
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener(){
             @Override
             public void onItemClick(AdapterView parent, View v, int position, long id) {
@@ -236,51 +240,51 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-//        // 읽어온 와이파이 정보를 데이터베이스에 올리기
-//        Button button2 = findViewById(R.id.btn2);
-//
-//        button2.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View v) {
-//                for(int i = 0; i < myAdapter.getCount(); i++) // 리스트뷰에 있는 만큼
-//                {   // 데이터 디비에 등록하기
-//                    m_Database.child(mSpinner1Value + "층").child(mSpinner2Value).child(myAdapter.getItem(i).getBSSID()).push().setValue(myAdapter.getItem(i).getRssi())
-//                            .addOnSuccessListener(new OnSuccessListener<Void>() {
-//                    @Override
-//                    public void onSuccess(Void aVoid) {
-//                        // 저장 성공 시 처리
-//                        Toast message = Toast.makeText(getApplicationContext(), "성공", Toast.LENGTH_SHORT);
-//                        message.show();
-//
-//                        Handler handler = new Handler();
-//                        handler.postDelayed(new Runnable() {
-//                            @Override
-//                            public void run() {
-//                                message.cancel();
-//                            }
-//                        }, 500);
-//
-//                    }
-//                })
-//                        .addOnFailureListener(new OnFailureListener() {
-//                            @Override
-//                            public void onFailure(@NonNull Exception e) {
-//                                // 저장 실패 시 처리
-//                                Toast message = Toast.makeText(getApplicationContext(), "실패", Toast.LENGTH_SHORT);
-//                                message.show();
-//
-//                                Handler handler = new Handler();
-//                                handler.postDelayed(new Runnable() {
-//                                    @Override
-//                                    public void run() {
-//                                        message.cancel();
-//                                    }
-//                                }, 500);
-//                            }
-//                        });;
-//                }
-//            }
-//        });
+        // 읽어온 와이파이 정보를 데이터베이스에 올리기
+        Button button2 = findViewById(R.id.btn2);
+        m_Database = FirebaseDatabase.getInstance().getReference();
+        button2.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                for(int i = 0; i < myAdapter.getCount(); i++) // 리스트뷰에 있는 만큼
+                {   // 데이터 디비에 등록하기
+                    m_Database.child(mSpinner1Value + "층").child(mSpinner2Value).child(myAdapter.getItem(i).getBSSID()).push().setValue(myAdapter.getItem(i).getRssi())
+                            .addOnSuccessListener(new OnSuccessListener<Void>() {
+                                @Override
+                                public void onSuccess(Void aVoid) {
+                                    // 저장 성공 시 처리
+                                    Toast message = Toast.makeText(getApplicationContext(), "성공", Toast.LENGTH_SHORT);
+                                    message.show();
+
+                                    Handler handler = new Handler();
+                                    handler.postDelayed(new Runnable() {
+                                        @Override
+                                        public void run() {
+                                            message.cancel();
+                                        }
+                                    }, 500);
+
+                                }
+                            })
+                            .addOnFailureListener(new OnFailureListener() {
+                                @Override
+                                public void onFailure(@NonNull Exception e) {
+                                    // 저장 실패 시 처리
+                                    Toast message = Toast.makeText(getApplicationContext(), "실패", Toast.LENGTH_SHORT);
+                                    message.show();
+
+                                    Handler handler = new Handler();
+                                    handler.postDelayed(new Runnable() {
+                                        @Override
+                                        public void run() {
+                                            message.cancel();
+                                        }
+                                    }, 500);
+                                }
+                            });;
+                }
+            }
+        });
     }
 
     private void scanSuccess() {
